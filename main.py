@@ -40,7 +40,8 @@ class Email:
 
 
 class Database:
-    def __int__(self, database_path):
+    def __init__(self, database_path):
+        self.database_path = database_path
         self.connection = sqlite3.connect(database_path)
 
     def store(self, extracted):
@@ -49,7 +50,6 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute("INSERT INTO events VALUES(?,?,?)", row)
         self.connection.commit()
-
 
     def read(self, extracted):
         row = extracted.split(",")
@@ -70,11 +70,10 @@ if __name__ == "__main__":
         print(extracted)
 
         if extracted != "No upcoming tours":
-            database = Database(database_path="data.db")
+            database = Database("data.db")
             row = database.read(extracted)
             if not row:
                 database.store(extracted)
                 email = Email()
                 email.send(message="New Event")
         time.sleep(2)
-
